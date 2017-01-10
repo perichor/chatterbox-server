@@ -31,6 +31,7 @@ var defaultCorsHeaders = {
 var _storage = [];
 
 var requestHandler = function(request, response) {
+  var results = [];
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -49,7 +50,7 @@ var requestHandler = function(request, response) {
 
   var endpoint = request.url.split('?')[0];
   // The outgoing status.
-  var statusCode;
+  var statusCode = 200;
   if (endpoint === '/classes/messages') {
     if (request.method === 'POST') {
       var message = '';
@@ -59,11 +60,10 @@ var requestHandler = function(request, response) {
       });
       request.on('end', function() {
         _storage.push(JSON.parse(message));
-        response.end('Message Recieved.');
+        response.end(JSON.stringify(_storage));
       });
     } else if (request.method === 'GET') {
-      var results = [];
-      result = _storage;
+      results = _storage;
       statusCode = 200;
     }
   } else {
@@ -91,8 +91,8 @@ var requestHandler = function(request, response) {
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
 
-  
-  if (request.method === 'GET') {
+
+  if (request.method === 'GET' || request.method === 'OPTIONS') {
     response.end(JSON.stringify({results: results}));
   }
 };
