@@ -27,9 +27,10 @@ var defaultCorsHeaders = {
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
-
+var _id = 31111;
+// var _welcomeMessage = {username: 'Chatterbox', roomname: 'lobby', text: 'Welcome!', createdAt: new Date().toISOString(), objectId: _id++};
+// var _storage = [_welcomeMessage]; // use this line to stop spinner!
 var _storage = [];
-
 var requestHandler = function(request, response) {
   var results = [];
   // Request and Response come from node's http module.
@@ -53,19 +54,34 @@ var requestHandler = function(request, response) {
   var statusCode = 200;
   if (endpoint === '/classes/messages') {
     if (request.method === 'POST') {
+    // POST ***************************************
       var message = '';
       statusCode = 201;
       request.on('data', function(chunk) {
         message += chunk;
       });
+
+
       request.on('end', function() {
-        _storage.push(JSON.parse(message));
-        response.end(JSON.stringify(_storage));
+        message = JSON.parse(message);
+        message.objectId = _id++;
+        message.createdAt = new Date().toISOString();
+
+        _storage.push(message);
+        response.end(JSON.stringify({objectId: message.objectId, createdAt: message.createdAt}));
       });
+
+
+
+
+    // POST ***************************************
     } else if (request.method === 'GET') {
+    // GET ****************************************
       results = _storage;
       statusCode = 200;
     }
+
+    // GET ****************************************
   } else {
     statusCode = 404;
   }
@@ -98,5 +114,5 @@ var requestHandler = function(request, response) {
 };
 
 
-module.exports = requestHandler;
+module.exports.requestHandler = requestHandler;
 

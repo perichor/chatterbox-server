@@ -11,6 +11,8 @@ Icon
 .Spotlight-V100
 .Trashes
 
+### Testing ###
+ajax-tests.js
 
 ### Node ###
 lib-cov
