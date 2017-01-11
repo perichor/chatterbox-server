@@ -28,9 +28,9 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 var _id = 31111;
-// var _welcomeMessage = {username: 'Chatterbox', roomname: 'lobby', text: 'Welcome!', createdAt: new Date().toISOString(), objectId: _id++};
-// var _storage = [_welcomeMessage]; // use this line to stop spinner!
-var _storage = [];
+var _welcomeMessage = {username: 'Chatterbox', roomname: 'lobby', text: 'Welcome!', createdAt: new Date().toISOString(), objectId: _id++};
+var _storage = [_welcomeMessage]; // use this line to stop spinner!
+// var _storage = [];
 var requestHandler = function(request, response) {
   var results = [];
   // Request and Response come from node's http module.
@@ -61,7 +61,6 @@ var requestHandler = function(request, response) {
         message += chunk;
       });
 
-
       request.on('end', function() {
         message = JSON.parse(message);
         message.objectId = _id++;
@@ -70,14 +69,25 @@ var requestHandler = function(request, response) {
         _storage.push(message);
         response.end(JSON.stringify({objectId: message.objectId, createdAt: message.createdAt}));
       });
-
-
-
-
     // POST ***************************************
+
     } else if (request.method === 'GET') {
     // GET ****************************************
-      results = _storage;
+      var specifications = request.url.split('?')[1];
+      // get order specifications
+      var order = specifications.split('=')[1];
+      if (order.includes('-')) {
+        results = _storage.slice();
+        results.reverse();
+        // var bufferMessage = {};
+        // bufferMessage.text = '';
+        // bufferMessage.username = '';
+        // bufferMessage.roomname = ' ';
+        // bufferMessage.objectId = _storage[_storage.length - 1].objectId;
+        // results.push(bufferMessage);
+      } else {
+        results = _storage.slice(0, 100);
+      }
       statusCode = 200;
     }
 
@@ -106,7 +116,6 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-
 
   if (request.method === 'GET' || request.method === 'OPTIONS') {
     response.end(JSON.stringify({results: results}));

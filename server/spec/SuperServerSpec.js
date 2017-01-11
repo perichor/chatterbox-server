@@ -24,6 +24,7 @@ describe('More Server Tests', function() {
     expect(message.objectId).to.be.above(31111);
     expect(res._ended).to.equal(true);
   });
+  
   it('should return createdAt from POST request', function() {
     var stubMsg = {
       username: 'Jono',
